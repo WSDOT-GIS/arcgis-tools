@@ -1,0 +1,21 @@
+{
+	"name": "@wsdot/arcgis-tools",
+	"description": "Tools for working with ArcGIS files",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"biome": "biome check --write",
+		"biome-ci": "biome ci"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"cspell": "^8.15.4"
+	},
+	"trustedDependencies": ["@biomejs/biome"]
+}
