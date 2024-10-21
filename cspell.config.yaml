@@ -3,6 +3,7 @@ allowCompoundWords: true
 ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
-words: []
+words:
+  - Positionals
 ignoreWords: []
 import: []

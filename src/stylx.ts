@@ -4,8 +4,8 @@
  * Reads the contents of the .stylx file, which is actually a SQLite
  * database.
  */
-import { Database } from "bun:sqlite";
-import { join, dirname } from "node:path";
+import { Database, type SQLQueryBindings } from "bun:sqlite";
+import { dirname, join } from "node:path";
 
 const dir = dirname(import.meta.dirname);
 
@@ -13,22 +13,47 @@ const stylxPath = join(dir, "samples", "LocateMP.stylx");
 
 console.log("stylx path", stylxPath);
 
-interface Item {
+export interface Item {
 	id: string;
 	class: string;
 	category: string;
 	name: string;
-	tags: string[];
+	tags: string[] | null;
 	content: Record<string, unknown>;
 }
 
-interface RawItem extends Omit<Item, "content" | "tags"> {
+interface RawItem
+	extends Record<string, string>,
+		Omit<Item, "content" | "tags"> {
 	tags: string;
 	content: string;
 }
 
-function createDatabase(stylx: string) {
-	const db = new Database(`${stylx}`, {
+export class StylxItem implements RawItem {
+	[key: string]: string;
+	id: string;
+	class: string;
+	category: string;
+	name: string;
+	tags: string;
+	content: string;
+
+	// Note: bun SQL doesn't call the constructor.
+	// constructor provided so that typescript
+	// doesn't complain about values not being
+	// initialized.
+	constructor(item: RawItem) {
+		this.id = item.id;
+		this.class = item.class;
+		this.category = item.category;
+		this.name = item.name;
+		this.tags = item.tags;
+		this.content = item.content;
+	}
+}
+
+export function createDatabase(stylxPath: string) {
+	const db = new Database(`${stylxPath}`, {
 		readonly: true,
 		strict: true,
 	});
@@ -52,9 +77,10 @@ export function getTableInfo(db: Database) {
 	return tableNames;
 }
 
-function* getItems(db: Database) {
-	const query = db.query(
-		String.raw`SELECT
+export function* getItems(db: Database) {
+	const query = db
+		.query(
+			String.raw`SELECT
 			ID id,
 			CLASS class,
 			CATEGORY category,
@@ -62,8 +88,8 @@ function* getItems(db: Database) {
 			TAGS tags,
 			CONTENT content
 		FROM Items`,
-	);
-	// @ts-expect-error
+		)
+		.as(StylxItem);
 	for (const item of query.iterate()) {
 		yield {
 			...(item as RawItem),
@@ -71,24 +97,4 @@ function* getItems(db: Database) {
 			content: JSON.parse(item.content),
 		};
 	}
-	// const items = query.all() as Item[];
-	// query.finalize();
-	// return items;
-}
-
-let items: Item[];
-const db = createDatabase(stylxPath);
-try {
-	items = [...getItems(db)];
-} finally {
-	db.close();
-}
-
-for (const item of items) {
-	console.log(
-		`id: ${item.id}, class: ${item.class}, category: ${item.category ?? "null"}, name: ${item.name}, tags: ${item.tags}
-    `,
-	);
-
-	console.log(item.content);
 }

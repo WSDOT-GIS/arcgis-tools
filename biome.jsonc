@@ -7,8 +7,8 @@
 		"defaultBranch": "master"
 	},
 	"files": {
-		"ignoreUnknown": false,
-		"ignore": []
+		"ignoreUnknown": true,
+		"ignore": ["bin"]
 	},
 	"formatter": {
 		"enabled": true,
