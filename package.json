@@ -3,15 +3,20 @@
 	"description": "Tools for working with ArcGIS files",
 	"module": "index.ts",
 	"type": "module",
+	"directories": {
+		"bin": "bin",
+		"lib": "src"
+	},
 	"scripts": {
-		"build-exe": "bun build src/dump-stylx.ts --compile --outfile=bin/dump-stylx.exe",
-		"build-bun": "bun build --compile --minify --sourcemap --bytecode src/dump-stylx.ts --outfile=bin/dump-stylx",
+		"compile": "bun build ./src/dump-stylx.ts --compile --outfile=./bin/dump-stylx",
+		"cross-compile": "bun tools/build-exes.ts",
 		"biome": "biome check --write",
-		"biome-ci": "biome ci"
+		"biome-ci": "biome ci",
+		"prepublishOnly": "bun run compile"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"bun-types": "^1.1.31"
+		"bun-types": "^1.1.32"
 	},
 	"peerDependencies": {
 		"typescript": "^5.6.3"

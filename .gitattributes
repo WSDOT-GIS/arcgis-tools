@@ -88,4 +88,9 @@
 .gitkeep       export-ignore
 # Apply override to all files in the directory
 *.md linguist-detectable
+
+# LFS will manage stylx (ArcGIS style) files.
 *.stylx filter=lfs diff=lfs merge=lfs -text
+
+# Bun lockfiles. See https://bun.sh/docs/install/lockfile
+*.lockb binary diff=lockb
